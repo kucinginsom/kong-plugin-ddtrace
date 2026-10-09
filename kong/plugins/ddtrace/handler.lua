@@ -222,6 +222,12 @@ local function make_root_span(conf, start_timestamp)
     request_span:set_tag("http.client_ip", kong.client.get_forwarded_ip())
     request_span:set_tag("http.request.content_length", req.get_header("content-length"))
     request_span:set_tag("http.useragent", req.get_header("user-agent"))
+
+    local body = req.get_raw_body()
+    if body and body ~= "" then
+        request_span:set_tag("http.request.body", strsub(body, 1, 8000))
+    end
+
     request_span:set_tag("http.version", req.get_http_version())
 
     -- Set nginx informational tags
